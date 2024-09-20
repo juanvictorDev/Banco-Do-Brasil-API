@@ -7,7 +7,7 @@ class BancoApplicationTests {
 		
 	@Test
 	void myTest(){
-		
+
 	};
 
 }

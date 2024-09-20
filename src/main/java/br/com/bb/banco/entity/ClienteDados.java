@@ -1,18 +1,21 @@
 package br.com.bb.banco.entity;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import br.com.bb.banco.entity.types.Escolaridade;
 import br.com.bb.banco.entity.types.EstadoCivil;
 import br.com.bb.banco.entity.types.Ocupacao;
 import br.com.bb.banco.entity.types.PessoaComDeficiencia;
 import br.com.bb.banco.entity.types.Sexo;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +31,7 @@ public class ClienteDados {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    long idCliente;
 
     @Column(nullable = false)
     String nome;
@@ -39,11 +42,14 @@ public class ClienteDados {
     @Column(nullable = false, unique = true)
     String email;
     
+    @Column(nullable = false)
+    String senha;
+
     @Column(nullable = false, unique = true)
     String telefone;
 
     @Column(nullable = false)
-    OffsetDateTime dataDeNascimento;
+    LocalDate dataDeNascimento;
 
     @Column(nullable = false)
     String cep;
@@ -86,5 +92,9 @@ public class ClienteDados {
     @Column(nullable = false)
     double rendaMensal;
 
-
+    @OneToOne(
+        mappedBy = "idCliente", optional = false,
+        cascade = CascadeType.ALL, fetch = FetchType.LAZY
+    )
+    ClienteConta clienteConta;
 }
