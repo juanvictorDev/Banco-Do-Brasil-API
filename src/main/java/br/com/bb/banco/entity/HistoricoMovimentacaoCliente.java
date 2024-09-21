@@ -25,7 +25,7 @@ public class HistoricoMovimentacaoCliente {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long idMovimentacao;
+    Long idMovimentacao;
     
     @Column(nullable = false)
     boolean deposito;

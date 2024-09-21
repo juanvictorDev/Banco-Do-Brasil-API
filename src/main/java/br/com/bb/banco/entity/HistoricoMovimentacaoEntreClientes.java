@@ -25,7 +25,7 @@ public class HistoricoMovimentacaoEntreClientes {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long idMovimentacao;
+    Long idMovimentacao;
     
     @Column(nullable = false)
     BigDecimal valor;

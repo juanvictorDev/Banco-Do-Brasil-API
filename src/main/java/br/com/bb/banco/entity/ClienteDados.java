@@ -31,7 +31,7 @@ public class ClienteDados {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long idCliente;
+    Long idCliente;
 
     @Column(nullable = false)
     String nome;
@@ -90,7 +90,7 @@ public class ClienteDados {
     Ocupacao ocupacao;
     
     @Column(nullable = false)
-    double rendaMensal;
+    Double rendaMensal;
 
     @OneToOne(
         mappedBy = "idCliente", optional = false,

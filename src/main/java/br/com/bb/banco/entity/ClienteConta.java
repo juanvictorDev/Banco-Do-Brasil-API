@@ -5,9 +5,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.List;
-
 import org.hibernate.annotations.ColumnDefault;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,11 +28,11 @@ public class ClienteConta {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long idConta;
+    Long idConta;
 
-    @Column(nullable = false)
-    @ColumnDefault("0.00")
-    BigDecimal saldo;
+    @Builder.Default
+    @ColumnDefault(value = "0.00") @Column(nullable = false)
+    BigDecimal saldo = BigDecimal.ZERO;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente")
