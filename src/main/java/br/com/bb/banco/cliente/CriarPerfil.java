@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 import org.springframework.stereotype.Service;
 import br.com.bb.banco.entity.ClienteDados;
+import br.com.bb.banco.entity.types.Avaliacao;
 import br.com.bb.banco.entity.types.Ocupacao;
 
 
@@ -18,7 +19,7 @@ public class CriarPerfil {
     private Random random = new Random();
 
 
-    public Map<String, Double> pesquisarScore(int idade, double rendaMensal){
+    private Map<String, Double> pesquisarScore(int idade, double rendaMensal){
         double compromissoComCredito, registroDeDividas, consultasAoCpf;
         double dividas, evolucaoFinanceira, score;
 
@@ -76,7 +77,7 @@ public class CriarPerfil {
     }
 
 
-    public Map<String, Double> filtrarDados(double rendaMensal, double dividas, int idade, Ocupacao ocupacao, double compromissoComCredito){
+    private Map<String, Double> filtrarDados(double rendaMensal, double dividas, int idade, Ocupacao ocupacao, double compromissoComCredito){
         double capacidadeDePagamento, utilizacaoDeCredito, garantias;
         double estabilidadeProfissional, notaDoPerfil;
         
@@ -93,7 +94,7 @@ public class CriarPerfil {
             capacidadeDePagamento = 0;
         }
 
-        utilizacaoDeCredito = compromissoComCredito / 100;
+        utilizacaoDeCredito = compromissoComCredito / 100; 
 
         if (idade < 25) {
             garantias = random.nextInt(3);
@@ -123,10 +124,10 @@ public class CriarPerfil {
         }
 
         notaDoPerfil = 
-            capacidadeDePagamento * 0.6 +
-            utilizacaoDeCredito * 0.3 +
+            capacidadeDePagamento * 0.5 +
+            utilizacaoDeCredito * 0.2 +
             garantias * 0.1 +
-            estabilidadeProfissional * 0.2;
+            estabilidadeProfissional * 0.1;
             
         notaDoPerfil = Math.round(notaDoPerfil * 100.0) / 100.0;
 
@@ -137,23 +138,43 @@ public class CriarPerfil {
         resultadoFiltragemDeDados.put("estabilidade profissional", estabilidadeProfissional);
         resultadoFiltragemDeDados.put("nota do perfil", notaDoPerfil);
 
-
         return resultadoFiltragemDeDados;
+    }
+
+
+    public Avaliacao receberAvaliacao(double notaDoPerfil){
+        Avaliacao avaliacao;
+
+        if(notaDoPerfil >= 8){
+            avaliacao = Avaliacao.EXCELENTE;
+
+        } else if (notaDoPerfil >= 6) {
+            avaliacao = Avaliacao.BOM;
+        
+        } else if (notaDoPerfil >= 4){
+            avaliacao = Avaliacao.MEDIANO;
+        
+        } else{
+            avaliacao = Avaliacao.RUIM;
+        }
+
+        return avaliacao;
     }
 
 
     public void criar(ClienteDados clienteDados){
         int idade = Period.between(clienteDados.getDataDeNascimento(), LocalDate.now()).getYears();
         double rendaMensal = clienteDados.getRendaMensal();
-        Ocupacao ocupacao = clienteDados.getOcupacao();
-        
         Map<String, Double> resultadoScore = pesquisarScore(idade, rendaMensal);
         
+        Ocupacao ocupacao = clienteDados.getOcupacao();
         double compromissoComCredito = resultadoScore.get("compromisso com credito");
         double dividas = resultadoScore.get("dividas");
-        
         Map<String, Double> resultadoFiltragem = filtrarDados(rendaMensal, dividas, idade, ocupacao, compromissoComCredito);
-        
+ 
+        Avaliacao resultadoAvaliacao = receberAvaliacao(resultadoFiltragem.get("nota do perfil"));
+        //idPerfil, notaDoPerfil, score, avaliacao,   
+
         // clientePerfilRepository.save(new ClientePerfil(score, dados))
     }
 
