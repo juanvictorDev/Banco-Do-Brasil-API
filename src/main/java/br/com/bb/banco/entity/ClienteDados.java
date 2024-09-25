@@ -97,4 +97,11 @@ public class ClienteDados {
         cascade = CascadeType.ALL, fetch = FetchType.LAZY
     )
     ClienteConta clienteConta;
+    
+    @OneToOne(
+        mappedBy = "idCliente", 
+        cascade = CascadeType.ALL, 
+        fetch = FetchType.LAZY
+    )
+    ClientePerfil clientePerfil;
 }

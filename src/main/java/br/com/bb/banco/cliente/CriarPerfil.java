@@ -9,14 +9,24 @@ import java.util.Map;
 import java.util.Random;
 import org.springframework.stereotype.Service;
 import br.com.bb.banco.entity.ClienteDados;
+import br.com.bb.banco.entity.ClientePerfil;
 import br.com.bb.banco.entity.types.Avaliacao;
 import br.com.bb.banco.entity.types.Ocupacao;
+import br.com.bb.banco.repository.ClientePerfilRepository;
 
 
 @Service
 public class CriarPerfil {
     
-    private Random random = new Random();
+    private ClientePerfilRepository clientePerfilRepository;
+
+    private Random random;
+
+
+    public CriarPerfil(ClientePerfilRepository clientePerfilRepository) {
+        this.clientePerfilRepository = clientePerfilRepository;
+        this.random = new Random();
+    }
 
 
     private Map<String, Double> pesquisarScore(int idade, double rendaMensal){
@@ -142,7 +152,7 @@ public class CriarPerfil {
     }
 
 
-    public Avaliacao receberAvaliacao(double notaDoPerfil){
+    private Avaliacao receberAvaliacao(double notaDoPerfil){
         Avaliacao avaliacao;
 
         if(notaDoPerfil >= 8){
@@ -162,7 +172,7 @@ public class CriarPerfil {
     }
 
 
-    public void criar(ClienteDados clienteDados){
+    public ClientePerfil criar(ClienteDados clienteDados){
         int idade = Period.between(clienteDados.getDataDeNascimento(), LocalDate.now()).getYears();
         double rendaMensal = clienteDados.getRendaMensal();
         Map<String, Double> resultadoScore = pesquisarScore(idade, rendaMensal);
@@ -171,11 +181,18 @@ public class CriarPerfil {
         double compromissoComCredito = resultadoScore.get("compromisso com credito");
         double dividas = resultadoScore.get("dividas");
         Map<String, Double> resultadoFiltragem = filtrarDados(rendaMensal, dividas, idade, ocupacao, compromissoComCredito);
- 
+        
         Avaliacao resultadoAvaliacao = receberAvaliacao(resultadoFiltragem.get("nota do perfil"));
-        //idPerfil, notaDoPerfil, score, avaliacao,   
 
-        // clientePerfilRepository.save(new ClientePerfil(score, dados))
+        ClientePerfil clientePerfil = ClientePerfil.builder()
+            .idPerfil(null)
+            .notaDoPerfil(resultadoFiltragem.get("nota do perfil"))
+            .score(resultadoScore.get("score"))
+            .avaliacao(resultadoAvaliacao)
+            .idCliente(clienteDados)
+            .build();
+
+        return clientePerfilRepository.save(clientePerfil);
     }
 
  
