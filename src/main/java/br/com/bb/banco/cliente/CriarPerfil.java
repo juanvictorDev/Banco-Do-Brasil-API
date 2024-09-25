@@ -51,16 +51,16 @@ public class CriarPerfil {
             consultasAoCpf = random.nextInt(200) + 301; 
             
         }else{
-            registroDeDividas = random.nextInt(301); 
+            registroDeDividas = random.nextInt(200) + 101; 
             dividas = Math.round((rendaMensal * 1.1) * 100.0) / 100.0;
             consultasAoCpf = random.nextInt(301); 
         }
       
 
-        if (idade < 25) {
+        if (idade <= 25) {
             evolucaoFinanceira = random.nextInt(301) + 100;
 
-        } else if (idade < 40) {
+        } else if (idade <= 40) {
             evolucaoFinanceira = random.nextInt(301) + 400; 
 
         } else {
@@ -68,10 +68,8 @@ public class CriarPerfil {
         }
         
         score = 
-            compromissoComCredito * 0.55 + 
-            registroDeDividas * 0.33 + 
-            consultasAoCpf * 0.06 + 
-            evolucaoFinanceira * 0.06;
+            ( compromissoComCredito * 0.55 + registroDeDividas * 0.33 + 
+            consultasAoCpf * 0.06 + evolucaoFinanceira * 0.06 ) / ( 0.55 + 0.33 + 0.06 + 0.06 );
 
         score = Math.round(score * 100.0) / 100.0;
         
@@ -98,7 +96,7 @@ public class CriarPerfil {
             capacidadeDePagamento = random.nextInt(4) + 4; 
 
         } else if (dividas <= rendaMensal * 0.9) {
-            capacidadeDePagamento = random.nextInt(2) + 2;
+            capacidadeDePagamento = random.nextInt(3) + 1;
 
         } else {
             capacidadeDePagamento = 0;
@@ -107,13 +105,13 @@ public class CriarPerfil {
         utilizacaoDeCredito = compromissoComCredito / 100; 
 
         if (idade < 25) {
-            garantias = random.nextInt(3);
+            garantias = random.nextInt(4);
 
         } else if (idade < 40) {
-            garantias = random.nextInt(4) + 1;
+            garantias = random.nextInt(4) + 3;
 
         } else {
-            garantias = random.nextInt(5) + 2;
+            garantias = random.nextInt(5) + 6;
         }
 
         List<Ocupacao> ocupacaoBaixoNivel = Arrays.asList(Ocupacao.DESEMPREGADO, Ocupacao.ESTUDANTE);
@@ -124,20 +122,18 @@ public class CriarPerfil {
         );
 
         if(ocupacaoAltoNivel.contains(ocupacao)){
-            estabilidadeProfissional = random.nextInt(3) + 8;
+            estabilidadeProfissional = 10;
         
         } else if (ocupacaoBaixoNivel.contains(ocupacao)){
-            estabilidadeProfissional = random.nextInt(4);
+            estabilidadeProfissional = 3;
             
         } else {
-            estabilidadeProfissional = random.nextInt(3) + 5;
+            estabilidadeProfissional = 7;
         }
 
         notaDoPerfil = 
-            capacidadeDePagamento * 0.5 +
-            utilizacaoDeCredito * 0.2 +
-            garantias * 0.1 +
-            estabilidadeProfissional * 0.1;
+            ( capacidadeDePagamento * 0.6 + utilizacaoDeCredito * 0.2 + 
+            garantias * 0.1 + estabilidadeProfissional * 0.1 ) / ( 0.6 + 0.2 + 0.1 + 0.1 );
             
         notaDoPerfil = Math.round(notaDoPerfil * 100.0) / 100.0;
 
