@@ -93,8 +93,9 @@ public class ClienteDados {
     Double rendaMensal;
 
     @OneToOne(
-        mappedBy = "idCliente", optional = false,
-        cascade = CascadeType.ALL, fetch = FetchType.LAZY
+        mappedBy = "idCliente",
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY
     )
     ClienteConta clienteConta;
     

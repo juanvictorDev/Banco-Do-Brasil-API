@@ -34,8 +34,8 @@ public class ClienteConta {
     @ColumnDefault(value = "0.00") @Column(nullable = false)
     BigDecimal saldo = BigDecimal.ZERO;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_cliente")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_cliente", nullable = false)
     ClienteDados idCliente;
 
     @OneToMany(mappedBy = "idConta", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
