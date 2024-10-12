@@ -30,7 +30,7 @@ public class ConversorDeObjetos {
         .cidade(dto.cidade())
         .bairro(dto.bairro())
         .rua(dto.rua())
-        .numeroRua(dto.numeroRua())
+        .numeroResidencia(dto.numeroRua())
         .pcd(dto.pcd() != null ? PessoaComDeficiencia.valueOf(dto.pcd()) : null)
         .sexo(Sexo.valueOf(dto.sexo()))
         .escolaridade(Escolaridade.valueOf(dto.escolaridade()))
@@ -58,7 +58,7 @@ public class ConversorDeObjetos {
         .cidade(entity.getCidade())
         .bairro(entity.getBairro())
         .rua(entity.getRua())
-        .numeroRua(entity.getNumeroRua())
+        .numeroRua(entity.getNumeroResidencia())
         .pcd(entity.getPcd() != null ? entity.getPcd().name() : null)
         .sexo(entity.getSexo().name())
         .escolaridade(entity.getEscolaridade().name())
@@ -77,7 +77,7 @@ public class ConversorDeObjetos {
         .score(entity.getScore())
         .notaDoPerfil(entity.getNotaDoPerfil())
         .avaliacao(entity.getAvaliacao().name())
-        .idCliente(entity.getIdCliente().getIdCliente())
+        .idCliente(entity.getClienteDados().getIdCliente())
         .build();
 
 

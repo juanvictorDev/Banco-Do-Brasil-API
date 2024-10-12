@@ -67,7 +67,7 @@ public class ClienteDados {
     String rua;
 
     @Column(nullable = false)
-    String numeroRua;
+    String numeroResidencia;
 
     @Column(nullable = true)
     @Enumerated(EnumType.STRING)
@@ -93,16 +93,18 @@ public class ClienteDados {
     Double rendaMensal;
 
     @OneToOne(
-        mappedBy = "idCliente",
+        mappedBy = "clienteDados",
         cascade = CascadeType.ALL,
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        orphanRemoval = true
     )
     ClienteConta clienteConta;
     
     @OneToOne(
-        mappedBy = "idCliente", 
+        mappedBy = "clienteDados", 
         cascade = CascadeType.ALL, 
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        orphanRemoval = true
     )
     ClientePerfil clientePerfil;
 }

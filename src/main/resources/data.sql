@@ -10,10 +10,10 @@ VALUES ('Saque aniversario FGTS', 'Descrição Exemplo', 'ANTECIPACAO');
 
 
 INSERT INTO linha_de_credito (nome, descricao, tipo)
-VALUES ('Credito Consignado  Publico', 'Descrição Exemplo', 'CREDITO_NOVO');
+VALUES ('Credito Consignado Publico', 'Descrição Exemplo', 'CREDITO_NOVO');
 
 INSERT INTO linha_de_credito (nome, descricao, tipo)
-VALUES ('Credito Consignado  Privado', 'Descrição Exemplo', 'CREDITO_NOVO');
+VALUES ('Credito Consignado Privado', 'Descrição Exemplo', 'CREDITO_NOVO');
 
 INSERT INTO linha_de_credito (nome, descricao, tipo)
 VALUES ('Credito Automatico', 'Descrição Exemplo', 'CREDITO_NOVO');

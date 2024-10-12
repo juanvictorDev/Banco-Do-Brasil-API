@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.bb.banco.entity.ClienteDados;
 import br.com.bb.banco.entity.ClientePerfil;
@@ -18,16 +19,11 @@ import br.com.bb.banco.repository.ClientePerfilRepository;
 @Service
 public class CriarPerfil {
     
+    @Autowired
     private ClientePerfilRepository clientePerfilRepository;
-
-    private Random random;
-
-
-    public CriarPerfil(ClientePerfilRepository clientePerfilRepository) {
-        this.clientePerfilRepository = clientePerfilRepository;
-        this.random = new Random();
-    }
-
+    
+    private Random random = new Random();
+    
 
     private Map<String, Double> pesquisarScore(int idade, double rendaMensal){
         double compromissoComCredito, registroDeDividas, consultasAoCpf;
@@ -181,11 +177,10 @@ public class CriarPerfil {
         Avaliacao resultadoAvaliacao = receberAvaliacao(resultadoFiltragem.get("nota do perfil"));
 
         ClientePerfil clientePerfil = ClientePerfil.builder()
-            .idPerfil(null)
             .notaDoPerfil(resultadoFiltragem.get("nota do perfil"))
             .score(resultadoScore.get("score"))
             .avaliacao(resultadoAvaliacao)
-            .idCliente(clienteDados)
+            .clienteDados(clienteDados)
             .build();
 
         return clientePerfilRepository.save(clientePerfil);

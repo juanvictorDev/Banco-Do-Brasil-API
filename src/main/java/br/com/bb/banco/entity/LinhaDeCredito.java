@@ -23,7 +23,7 @@ public class LinhaDeCredito {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long idCredito;
+    Long idLinhaDeCredito;
     
     @Column(nullable = false, unique = true)
     String nome;

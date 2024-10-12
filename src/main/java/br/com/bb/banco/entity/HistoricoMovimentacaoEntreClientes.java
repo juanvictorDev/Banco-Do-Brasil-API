@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.OffsetTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,11 +37,11 @@ public class HistoricoMovimentacaoEntreClientes {
     @Column(nullable = false)
     OffsetTime hora;
 
-    @ManyToOne
-    @JoinColumn(name = "id_conta_remetente")
-    ClienteConta idContaRemetente;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_conta_remetente", nullable = false)
+    ClienteConta clienteContaRemetente;
     
-    @ManyToOne
-    @JoinColumn(name = "id_conta_destinatario")
-    ClienteConta idContaDestinatario;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_conta_destinatario", nullable = false)
+    ClienteConta clienteContaDestinatario;
 }

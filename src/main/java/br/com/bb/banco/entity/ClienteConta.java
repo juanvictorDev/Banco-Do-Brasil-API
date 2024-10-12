@@ -36,14 +36,14 @@ public class ClienteConta {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_cliente", nullable = false)
-    ClienteDados idCliente;
+    ClienteDados clienteDados;
 
-    @OneToMany(mappedBy = "idConta", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "clienteConta", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<HistoricoMovimentacaoCliente> movimentacaoCliente;
 
-    @OneToMany(mappedBy = "idContaRemetente", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "clienteContaRemetente", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<HistoricoMovimentacaoEntreClientes> historicoMovimentacaoClienteRemetente;
 
-    @OneToMany(mappedBy = "idContaDestinatario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "clienteContaDestinatario", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<HistoricoMovimentacaoEntreClientes> historicoMovimentacaoClienteDestinatario;
 }

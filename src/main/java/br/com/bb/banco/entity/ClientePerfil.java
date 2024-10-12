@@ -38,8 +38,8 @@ public class ClientePerfil {
     @Enumerated(EnumType.STRING)
     Avaliacao avaliacao;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_cliente")
-    ClienteDados idCliente;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_cliente", nullable = false)
+    ClienteDados clienteDados;
 
 }
