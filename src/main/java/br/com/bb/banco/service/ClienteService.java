@@ -46,6 +46,7 @@ public class ClienteService {
         
         Link selfLink = linkTo(methodOn(ClienteController.class).buscarCliente(clienteDadosDatabase.getIdCliente())).withSelfRel();
         Link perfilLink = linkTo(methodOn(ClienteController.class).buscarPerfil(clienteDadosDatabase.getIdCliente())).withRel("perfil");
+        //link para conta
         EntityModel<ClienteDadosDto> entityModel = EntityModel.of(conversorDeObjetos.clienteDadosEntityParaDto(clienteDadosDatabase), selfLink, perfilLink);
 
         return entityModel;
