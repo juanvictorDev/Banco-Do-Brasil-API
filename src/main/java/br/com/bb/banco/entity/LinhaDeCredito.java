@@ -30,6 +30,9 @@ public class LinhaDeCredito {
 
     @Column(nullable = false)
     String descricao;
+    
+    @Column(nullable = false, unique = true)
+    String imagemNome;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

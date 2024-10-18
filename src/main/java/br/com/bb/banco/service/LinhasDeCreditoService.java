@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import br.com.bb.banco.controller.LinhasDeCreditoController;
 import br.com.bb.banco.entity.LinhaDeCredito;
+import br.com.bb.banco.entity.types.TipoLinhaDeCredito;
 import br.com.bb.banco.repository.LinhaDeCreditoRepository;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -85,5 +87,28 @@ public class LinhasDeCreditoService {
         EntityModel<LinhaDeCredito> entityModel = EntityModel.of(linhaDeCredito, selfLink);
 
         return entityModel;
+    }
+
+
+    public CollectionModel<EntityModel<LinhaDeCredito>> encontrarLinhaDeCreditoPorTipo(String tipo){
+
+        String tipoFormatado = tipo.replaceAll("-", "_").toUpperCase();
+
+        TipoLinhaDeCredito tipoLinhaDeCredito =  TipoLinhaDeCredito.valueOf(tipoFormatado);
+
+        List<LinhaDeCredito> linhaDeCreditoLista = linhaDeCreditoRepository.findByTipo(tipoLinhaDeCredito);
+
+        List<EntityModel<LinhaDeCredito>> entityModelList = linhaDeCreditoLista.stream()
+        .map(linhaDeCredito -> {
+            Link selfLink = linkTo(methodOn(LinhasDeCreditoController.class).buscarLinhaDeCredito(linhaDeCredito.getIdLinhaDeCredito())).withSelfRel().withType("GET");
+            return EntityModel.of(linhaDeCredito, selfLink);
+        })
+        .collect(Collectors.toList());       
+
+        Link selfLink = linkTo(methodOn(LinhasDeCreditoController.class).buscarLinhasDeCreditoPorTipo(tipo)).withSelfRel().withType("GET");
+
+        CollectionModel<EntityModel<LinhaDeCredito>> collectionModel = CollectionModel.of(entityModelList, selfLink);
+
+        return collectionModel;
     }
 }

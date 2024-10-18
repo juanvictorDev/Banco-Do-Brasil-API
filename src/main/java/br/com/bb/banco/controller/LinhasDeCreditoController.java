@@ -1,6 +1,7 @@
 package br.com.bb.banco.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,12 @@ public class LinhasDeCreditoController {
     @GetMapping("/linhas-de-credito/{id}")
     public ResponseEntity<EntityModel<LinhaDeCredito>> buscarLinhaDeCredito(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok().body(linhasDeCreditoService.encontrarLinhaDeCredito(id));
+    }
+    
+
+    @GetMapping("/linhas-de-credito/grupo/{tipo}")
+    public ResponseEntity<CollectionModel<EntityModel<LinhaDeCredito>>> buscarLinhasDeCreditoPorTipo(@PathVariable(name = "tipo") String tipo) {
+        return ResponseEntity.ok().body(linhasDeCreditoService.encontrarLinhaDeCreditoPorTipo(tipo));
     }
     
 }
