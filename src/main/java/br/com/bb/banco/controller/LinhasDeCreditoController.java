@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import br.com.bb.banco.entity.LinhaDeCredito;
+import br.com.bb.banco.dto.LinhaDeCreditoDto;
 import br.com.bb.banco.service.LinhasDeCreditoService;
 
 
@@ -21,22 +21,22 @@ public class LinhasDeCreditoController {
 
 
     @GetMapping("/linhas-de-credito")
-    public ResponseEntity<PagedModel<EntityModel<LinhaDeCredito>>> buscarLinhasDeCredito(
+    public ResponseEntity<PagedModel<EntityModel<LinhaDeCreditoDto>>> buscarLinhasDeCredito(
         @RequestParam(name = "page", defaultValue = "0") int page,
-        @RequestParam(name = "size", defaultValue = "5") int size
+        @RequestParam(name = "size", defaultValue = "10") int size
     ) {
         return ResponseEntity.ok().body(linhasDeCreditoService.encontrarLinhasDeCredito(page, size));
     }
 
 
     @GetMapping("/linhas-de-credito/{id}")
-    public ResponseEntity<EntityModel<LinhaDeCredito>> buscarLinhaDeCredito(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<EntityModel<LinhaDeCreditoDto>> buscarLinhaDeCredito(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(linhasDeCreditoService.encontrarLinhaDeCredito(id));
     }
     
 
     @GetMapping("/linhas-de-credito/grupo/{tipo}")
-    public ResponseEntity<CollectionModel<EntityModel<LinhaDeCredito>>> buscarLinhasDeCreditoPorTipo(@PathVariable(name = "tipo") String tipo) {
+    public ResponseEntity<CollectionModel<EntityModel<LinhaDeCreditoDto>>> buscarLinhasDeCreditoPorTipo(@PathVariable("tipo") String tipo) {
         return ResponseEntity.ok().body(linhasDeCreditoService.encontrarLinhaDeCreditoPorTipo(tipo));
     }
     
