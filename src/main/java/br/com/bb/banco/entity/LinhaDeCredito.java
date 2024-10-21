@@ -33,6 +33,9 @@ public class LinhaDeCredito {
     
     @Column(nullable = false, unique = true)
     String imagemNome;
+    
+    @Column(nullable = false, unique = true)
+    String linkSite;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
