@@ -3,8 +3,10 @@ package br.com.bb.banco.utils;
 import org.springframework.stereotype.Component;
 import br.com.bb.banco.dto.ClienteDadosDto;
 import br.com.bb.banco.dto.ClientePerfilDto;
+import br.com.bb.banco.dto.LinhaDeCreditoDto;
 import br.com.bb.banco.entity.ClienteDados;
 import br.com.bb.banco.entity.ClientePerfil;
+import br.com.bb.banco.entity.LinhaDeCredito;
 import br.com.bb.banco.entity.types.Escolaridade;
 import br.com.bb.banco.entity.types.EstadoCivil;
 import br.com.bb.banco.entity.types.Ocupacao;
@@ -80,8 +82,20 @@ public class ConversorDeObjetos {
         .idCliente(entity.getClienteDados().getIdCliente())
         .build();
 
-
         return dto;
     }
 
+    public LinhaDeCreditoDto LinhaDeCreditoEntityParaDto(LinhaDeCredito entity){
+
+        LinhaDeCreditoDto dto = LinhaDeCreditoDto.builder()
+        .idLinhaDeCredito(entity.getIdLinhaDeCredito())
+        .nome(entity.getNome())
+        .descricao(entity.getDescricao())
+        .imagemNome(entity.getImagemNome())
+        .linkSite(entity.getLinkSite())
+        .tipo(entity.getTipo().name())
+        .build();
+
+        return dto;
+    }
 }
