@@ -1,9 +1,14 @@
 package br.com.bb.banco.utils;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 import br.com.bb.banco.dto.ClienteDadosDto;
 import br.com.bb.banco.dto.ClientePerfilDto;
+import br.com.bb.banco.dto.HistoricoGeralDto;
 import br.com.bb.banco.dto.LinhaDeCreditoDto;
+import br.com.bb.banco.entity.ClienteConta;
 import br.com.bb.banco.entity.ClienteDados;
 import br.com.bb.banco.entity.ClientePerfil;
 import br.com.bb.banco.entity.LinhaDeCredito;
@@ -12,14 +17,24 @@ import br.com.bb.banco.entity.types.EstadoCivil;
 import br.com.bb.banco.entity.types.Ocupacao;
 import br.com.bb.banco.entity.types.PessoaComDeficiencia;
 import br.com.bb.banco.entity.types.Sexo;
+import br.com.bb.banco.repository.ClienteContaRepository;
+import jakarta.persistence.Tuple;
+
 
 @Component
 public class ConversorDeObjetos {
     
+    ClienteContaRepository clienteContaRepository;
 
+    public ConversorDeObjetos(ClienteContaRepository clienteContaRepository) {
+        this.clienteContaRepository = clienteContaRepository;
+    }
+
+
+    // Conveter tipo ClienteDadosDto para ClienteDados
     public ClienteDados clienteDadosDtoParaEntity(ClienteDadosDto dto){
         
-        ClienteDados entity = ClienteDados.builder()
+        return ClienteDados.builder()
         .idCliente(dto.idCliente())
         .nome(dto.nome())
         .cpf(dto.cpf())
@@ -41,13 +56,12 @@ public class ConversorDeObjetos {
         .rendaMensal(dto.rendaMensal())
         .build();
 
-        return entity;
     }
 
-
+    // Converter tipo ClienteDados para ClienteDadosDto
     public ClienteDadosDto clienteDadosEntityParaDto(ClienteDados entity){
         
-        ClienteDadosDto dto = ClienteDadosDto.builder()
+        return ClienteDadosDto.builder()
         .idCliente(entity.getIdCliente())
         .nome(entity.getNome())
         .cpf(entity.getCpf())
@@ -69,12 +83,12 @@ public class ConversorDeObjetos {
         .rendaMensal(entity.getRendaMensal())
         .build();
 
-        return dto;
     }
 
-    public ClientePerfilDto ClientePerfilEntityParaDto(ClientePerfil entity){
+    // Converter tipo ClientePerfil pra ClientePerfilDto
+    public ClientePerfilDto clientePerfilEntityParaDto(ClientePerfil entity){
 
-        ClientePerfilDto dto = ClientePerfilDto.builder()
+        return ClientePerfilDto.builder()
         .idPerfil(entity.getIdPerfil())
         .score(entity.getScore())
         .notaDoPerfil(entity.getNotaDoPerfil())
@@ -82,20 +96,65 @@ public class ConversorDeObjetos {
         .idCliente(entity.getClienteDados().getIdCliente())
         .build();
 
-        return dto;
     }
 
-    public LinhaDeCreditoDto LinhaDeCreditoEntityParaDto(LinhaDeCredito entity){
+    // Converter tipo LinhaDeCredito para LinhaDeCreditoDto
+    public LinhaDeCreditoDto linhaDeCreditoEntityParaDto(LinhaDeCredito entity){
 
-        LinhaDeCreditoDto dto = LinhaDeCreditoDto.builder()
+        return LinhaDeCreditoDto.builder()
         .idLinhaDeCredito(entity.getIdLinhaDeCredito())
         .nome(entity.getNome())
         .descricao(entity.getDescricao())
+        .taxaDeJuros(entity.getTaxaDeJuros())
         .imagemNome(entity.getImagemNome())
         .linkSite(entity.getLinkSite())
         .tipo(entity.getTipo().name())
         .build();
 
-        return dto;
+    }
+
+    // Converter a Tuple para HistoricoGeralDto, os dados tem base na condicional que
+    // se id da movimentação for do historico pessoal retorna valores especificos referente ao mesmo
+    // e se for do historico entre clientes, a mesma logica
+    public HistoricoGeralDto tupleParaHistoricoGeralDto(Tuple tuple){
+        
+        if(tuple.get("mov_entre_cliente_id") != null ){
+
+            ClienteConta contaRemetente = clienteContaRepository.findById((Long)tuple.get("conta_remetente_id")).get();
+            ClienteConta contaDestinatario = clienteContaRepository.findById((Long)tuple.get("conta_destinatario_id")).get();
+            
+            return HistoricoGeralDto.builder()
+            .idMovimentacaoEntreClientes(tuple.get("mov_entre_cliente_id", Long.class))
+            .valorEntreClientes(tuple.get("valor_entre_cliente", BigDecimal.class))
+            .dataEntreClientes(sqlDateParaLocalDate(tuple.get("data_entre_cliente", Date.class)))
+            .horaEntreClientes(tuple.get("hora_entre_cliente", String.class))
+            .idContaRemetente(tuple.get("conta_remetente_id", Long.class))
+            .idContaDestinatario(tuple.get("conta_destinatario_id", Long.class))
+            .nomeRemetente(contaRemetente.getClienteDados().getNome())
+            .agenciaRemetente(contaRemetente.getAgencia())
+            .contaRemetente(contaRemetente.getNumeroDaConta())
+            .nomeDestinatario(contaDestinatario.getClienteDados().getNome())
+            .agenciaDestinatario(contaDestinatario.getAgencia())
+            .contaDestinatario(contaDestinatario.getNumeroDaConta())
+            .build();
+        
+        }else{
+            
+            return HistoricoGeralDto.builder()
+            .idMovimentacaoCliente(tuple.get("mov_cliente_id", Long.class))
+            .depositoCliente(tuple.get("deposito_cliente", Boolean.class))
+            .saqueCliente(tuple.get("saque_cliente", Boolean.class))
+            .valorCliente(tuple.get("valor_cliente", BigDecimal.class))
+            .dataCliente(sqlDateParaLocalDate(tuple.get("data_cliente", Date.class)))
+            .horaCliente(tuple.get("hora_cliente", String.class))
+            .idContaCliente(tuple.get("id_conta_cliente", Long.class))
+            .build();
+        }
+
+    }
+
+    // Método auxiliar para converter java.sql.Date em java.time.LocalDate
+    private LocalDate sqlDateParaLocalDate(Date sqlDate) {
+        return sqlDate != null ? sqlDate.toLocalDate() : null;
     }
 }
