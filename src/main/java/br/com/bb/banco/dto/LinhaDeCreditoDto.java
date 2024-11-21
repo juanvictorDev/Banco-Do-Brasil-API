@@ -1,20 +1,36 @@
 package br.com.bb.banco.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Builder
-public record LinhaDeCreditoDto(
+@Builder @Getter @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class LinhaDeCreditoDto{
+        
+    Long idLinhaDeCredito;
     
-    Long idLinhaDeCredito,
+    String nome;
+
+    String descricao;
+
+    String imagemNome;
+
+    String linkSite;
+
+    String tipo;
     
-    String nome,
+    Float taxaDeJuros;
 
-    String descricao,
+    Float valor;
 
-    String imagemNome,
+    Float taxaDeJurosTotal;
 
-    String linkSite,
+    Float montante;
 
-    String tipo
+    Float valorDaParcela;
+
+    Integer numeroDeParcelas;
     
-) {}
+}
