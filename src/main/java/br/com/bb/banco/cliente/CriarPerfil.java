@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.bb.banco.entity.ClienteDados;
 import br.com.bb.banco.entity.ClientePerfil;
@@ -19,11 +18,19 @@ import br.com.bb.banco.repository.ClientePerfilRepository;
 @Service
 public class CriarPerfil {
     
-    @Autowired
     private ClientePerfilRepository clientePerfilRepository;
-    
-    private Random random = new Random();
-    
+
+    private Random random;
+
+    public CriarPerfil(ClientePerfilRepository clientePerfilRepository) {
+        this.clientePerfilRepository = clientePerfilRepository;
+        this.random = new Random();
+    }
+
+
+    // Os metodos abaixo foram criados para simular uma pesquisa de analise de credito e score feita pelas instituições financeiras
+    // como os bancos, serasa e spc, a criação de perfil é feita no ato do registro do novo cliente, e no final recebendo uma
+    // avaliacao e uma nota para o perfil
 
     private Map<String, Double> pesquisarScore(int idade, double rendaMensal){
         double compromissoComCredito, registroDeDividas, consultasAoCpf;
@@ -163,7 +170,8 @@ public class CriarPerfil {
         return avaliacao;
     }
 
-
+    // Metodo principal que recebe o clienteDados do novo cliente e chama todos os outros metodos para
+    // criar o perfil do cliente, retorna um clientePerfil salvando o mesmo no banco de dados
     public ClientePerfil criar(ClienteDados clienteDados){
         int idade = Period.between(clienteDados.getDataDeNascimento(), LocalDate.now()).getYears();
         double rendaMensal = clienteDados.getRendaMensal();

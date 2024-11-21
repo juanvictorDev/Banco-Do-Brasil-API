@@ -31,6 +31,9 @@ public class LinhaDeCredito {
     @Column(nullable = false)
     String descricao;
     
+    @Column(nullable = false)
+    Float taxaDeJuros;
+
     @Column(nullable = false, unique = true)
     String imagemNome;
     
@@ -40,6 +43,5 @@ public class LinhaDeCredito {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     TipoLinhaDeCredito tipo;
-
 
 }

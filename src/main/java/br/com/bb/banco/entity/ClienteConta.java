@@ -30,11 +30,17 @@ public class ClienteConta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long idConta;
 
+    @Column(nullable = false)
+    String agencia;
+
+    @Column(nullable = false, unique = true)
+    String numeroDaConta;
+
     @Builder.Default
     @ColumnDefault(value = "0.00") @Column(nullable = false)
     BigDecimal saldo = BigDecimal.ZERO;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "id_cliente", nullable = false)
     ClienteDados clienteDados;
 

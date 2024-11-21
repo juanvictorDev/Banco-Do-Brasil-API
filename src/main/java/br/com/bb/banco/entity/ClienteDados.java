@@ -5,6 +5,7 @@ import br.com.bb.banco.entity.types.Escolaridade;
 import br.com.bb.banco.entity.types.EstadoCivil;
 import br.com.bb.banco.entity.types.Ocupacao;
 import br.com.bb.banco.entity.types.PessoaComDeficiencia;
+import br.com.bb.banco.entity.types.Role;
 import br.com.bb.banco.entity.types.Sexo;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -69,6 +70,10 @@ public class ClienteDados {
     @Column(nullable = false)
     String numeroResidencia;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    Role role;
+
     @Column(nullable = true)
     @Enumerated(EnumType.STRING)
     PessoaComDeficiencia pcd;
@@ -90,7 +95,7 @@ public class ClienteDados {
     Ocupacao ocupacao;
     
     @Column(nullable = false)
-    Double rendaMensal;
+    Float rendaMensal;
 
     @OneToOne(
         mappedBy = "clienteDados",

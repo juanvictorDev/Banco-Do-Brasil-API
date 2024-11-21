@@ -2,7 +2,6 @@ package br.com.bb.banco.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,7 +34,7 @@ public class HistoricoMovimentacaoEntreClientes {
     LocalDate data;
 
     @Column(nullable = false)
-    OffsetTime hora;
+    String hora;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_conta_remetente", nullable = false)
