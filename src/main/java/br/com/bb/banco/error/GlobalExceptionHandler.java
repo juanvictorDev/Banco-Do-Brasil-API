@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import br.com.bb.banco.error.custom.CreditLineValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 
 
@@ -47,7 +48,18 @@ public class GlobalExceptionHandler {
         return response(e, request, HttpStatus.BAD_REQUEST, errors);
     }
 
+    @ExceptionHandler(CreditLineValidationException.class)
+    public ResponseEntity<ErrorResponse> creditLineValidationExceptionHandler(CreditLineValidationException e, HttpServletRequest request){
+        return response(e, request, HttpStatus.BAD_REQUEST, null);
+    }
     
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> runtimeExceptionHandler(RuntimeException e, HttpServletRequest request){
+        return response(e, request, HttpStatus.INTERNAL_SERVER_ERROR, null);
+    }
+
+
+
     // Metodo utilitario para retornar uma resposta padronizada de erro
     private ResponseEntity<ErrorResponse> response(Exception e, HttpServletRequest request, HttpStatus status, List<ErrorResponse.ValidationError> errors) {
     
