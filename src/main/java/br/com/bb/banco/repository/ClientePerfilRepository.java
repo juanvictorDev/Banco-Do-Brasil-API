@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ClientePerfilRepository extends JpaRepository<ClientePerfil, Long>{
     
+    // Select para retornar o perfil do cliente com base no id do cliente e não do perfil
     @Query(value = "SELECT * FROM cliente_perfil WHERE id_cliente = :id", nativeQuery = true)
     Optional<ClientePerfil> findByIdCliente(@Param("id") Long id);
 
