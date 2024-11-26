@@ -8,7 +8,11 @@ import br.com.bb.banco.entity.types.TipoLinhaDeCredito;
 @Repository
 public interface LinhaDeCreditoRepository extends JpaRepository<LinhaDeCredito, Long>{
     
-    // Select para retornar a linha de credito pelo seu tipo
+    /**
+     * Busca uma linha de crédito pelo seu tipo específico
+     * @param tipo O tipo de linha de crédito a ser buscado
+     * @return A linha de crédito correspondente ao tipo informado
+     */
     LinhaDeCredito findByTipo(TipoLinhaDeCredito tipo);
 
 }

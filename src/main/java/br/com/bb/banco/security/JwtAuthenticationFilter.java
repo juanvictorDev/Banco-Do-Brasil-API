@@ -29,6 +29,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
 
+    /**
+     * Filtra as requisições HTTP para autenticar usuários com base em tokens JWT
+     * @param request A requisição HTTP a ser filtrada
+     * @param response A resposta HTTP
+     * @param filterChain A cadeia de filtros para continuar o processamento
+     * @throws ServletException Se ocorrer um erro durante o processamento do servlet
+     * @throws IOException Se ocorrer um erro de I/O
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -41,11 +49,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String conta = claims.get("conta").asString();
 
             ClienteConta clienteConta = clienteContaRepository.findByAgenciaAndNumeroDaConta(agencia, conta).get();
-            
+    
             UserDetailsImpl userDetails = new UserDetailsImpl(clienteConta);
-            
+    
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            
+    
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
@@ -53,8 +61,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
 
-    String headerToken(HttpServletRequest request){
-        
+    /**
+     * Extrai o token JWT do cabeçalho Authorization da requisição HTTP
+     * @param request A requisição HTTP da qual extrair o token
+     * @return O token JWT sem o prefixo "Bearer" ou null se não houver token
+     */
+    private String headerToken(HttpServletRequest request){
         String authorizationHeader = request.getHeader("Authorization");
         
         if (authorizationHeader != null) {
@@ -63,6 +75,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return null;
     }
-
-    
 }

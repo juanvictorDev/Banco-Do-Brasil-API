@@ -2,6 +2,7 @@ package br.com.bb.banco.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -59,8 +60,24 @@ public class LinhasDeCreditoService {
         this.calculadoraDeJuros = calculadoraDeJuros;
     }
 
-    // [TODAS AS LINHAS DE CRIDITO]
-    // Metodo para retornar todas as linhas de credito existentes de forma paginada
+    /**
+     * [TODAS AS LINHAS DE CREDITO]
+     * Retorna todas as linhas de crédito existentes de forma paginada
+     * @param page número da página desejada (começa em 0)
+     * @param size quantidade de itens por página
+     * @return PagedModel contendo EntityModels de LinhaDeCreditoDto com links HATEOAS
+     * O retorno inclui:
+     * - Lista de linhas de crédito com links individuais para:
+     *   - self: link para detalhes da própria linha
+     *   - simular: link para simulação da linha específica
+     * - Metadados da paginação
+     * - Links de navegação:
+     *   - self: página atual
+     *   - next: próxima página (se existir)
+     *   - previous: página anterior (se existir) 
+     *   - firstPage: primeira página (se não estiver nela)
+     *   - lastPage: última página (se não estiver nela)
+     */
     public PagedModel<EntityModel<LinhaDeCreditoDto>> encontrarLinhasDeCredito(Integer page, Integer size){
 
         Pageable pageable = PageRequest.of(page, size);
@@ -106,8 +123,14 @@ public class LinhasDeCreditoService {
         return PagedModel.of(entityModelList, pageMetadata, links);
     }
 
-    // [LINHA DE CREDITO ESPECIFICA]
-    // Metodo para encontrar linha de credito pelo id especifico
+    /**
+     * [LINHA DE CREDITO ESPECIFICA]
+     * Método para encontrar linha de crédito pelo id específico.
+     * @param id Identificador único da linha de crédito
+     * @return EntityModel contendo a linha de crédito encontrada e seus links HATEOAS
+     * @throws NullPointerException se o id fornecido for nulo
+     * @throws NoSuchElementException se não encontrar linha de crédito com o id fornecido
+     */
     public EntityModel<LinhaDeCreditoDto> encontrarLinhaDeCredito(Long id){
 
         if(id == null){
@@ -127,12 +150,45 @@ public class LinhasDeCreditoService {
         return EntityModel.of(linhaDeCreditoDto, selfLink, simular, geral);
     }
 
-    // [SIMULAR]
-    // Metodo para simular e retornar linha de credito pelo tipo, com os resultados derivados do calculo especifico da taxa de juros
+
+    /**
+     * [SIMULAR]
+     * Simula uma linha de crédito com base no tipo, valor e outros parâmetros fornecidos.
+     * O método avalia o perfil do cliente, verifica a elegibilidade para o tipo de crédito
+     * solicitado e realiza o cálculo da taxa de juros específica para o tipo de linha de crédito.
+     * Retorna os detalhes formatados da linha de crédito simulada com links relevantes.
+     * @param tipo o tipo de linha de crédito solicitado (exemplo, "ANTECIPAR_DECIMO_TERCEIRO").
+     * @param valor o valor desejado para a linha de crédito.
+     * @param parcelas o número de parcelas para o pagamento do crédito (pode ser {@code null} para certos tipos).
+     * @param custo o custo do bem ou patrimonio (pode ser {@code null} para certos tipos).
+     * @param data uma data relevante para a simulação (e.g., data de vencimento ou retirada, pode ser {@code null}).
+     * @return um {@link EntityModel} contendo os detalhes da linha de crédito simulada e links associados.
+     * @throws RuntimeException se o cliente não atender aos critérios de elegibilidade para a linha de crédito solicitada
+     * ou se ocorrer um erro no sistema de verificação.
+     */
     public EntityModel<LinhaDeCreditoDto> simularLinhaDeCreditoPorTipo(String tipo, Float valor, Integer parcelas, Float custo, LocalDate data) {
         
         TipoLinhaDeCredito tipoLinhaDeCredito = obterTipoLinhaDeCredito(tipo);
-        
+
+        ClientePerfil clientePerfil = obterClientePerfil();
+
+        if (clientePerfil.getAvaliacao().equals(Avaliacao.RUIM)) {
+
+            List<TipoLinhaDeCredito> tiposPermitidos = Arrays.asList(
+                TipoLinhaDeCredito.ANTECIPAR_DECIMO_TERCEIRO, 
+                TipoLinhaDeCredito.ANTECIPAR_IRPF, 
+                TipoLinhaDeCredito.ANTECIPAR_FGTS, 
+                TipoLinhaDeCredito.GARANTIA_IMOVEL, 
+                TipoLinhaDeCredito.GARANTIA_VEICULO, 
+                TipoLinhaDeCredito.GARANTIA_INVESTIMENTO
+            );
+            
+            if (!tiposPermitidos.contains(tipoLinhaDeCredito)) {
+                throw new RuntimeException("Cliente não possui nota suficiente para solicitar linhas de crédito.");
+            }
+        }
+           
+
         switch (tipoLinhaDeCredito) {
             case TipoLinhaDeCredito.ANTECIPAR_DECIMO_TERCEIRO:
                 {
@@ -335,7 +391,12 @@ public class LinhasDeCreditoService {
     }
 
 
-    // Metodo utilitario para transformar e padronizar a String do PathVariable em TipoLinhaDeCredito
+    /**
+     * Metodo utilitario para transformar e padronizar a String do PathVariable em TipoLinhaDeCredito
+     * @param tipo String contendo o tipo de linha de crédito a ser convertido
+     * @return TipoLinhaDeCredito enum correspondente ao tipo informado
+     * @throws CreditLineValidationException quando o tipo informado não existe no sistema
+     */
     private TipoLinhaDeCredito obterTipoLinhaDeCredito(String tipo) {
         try {
             String tipoFormatado = tipo.replaceAll("-", "_").toUpperCase();            
@@ -346,14 +407,20 @@ public class LinhasDeCreditoService {
         } 
     }
 
-    // Metodo utilitario para buscar linhas de credito do database e converter para o dto
+    /**
+     * Metodo utilitario para buscar linhas de credito do database e converter para o dto
+     * @param tipo TipoLinhaDeCredito enum que representa o tipo de linha de crédito a ser buscada
+     * @return LinhaDeCreditoDto objeto contendo os dados da linha de crédito convertidos
+     */
     private LinhaDeCreditoDto carregarEConverterLinha(TipoLinhaDeCredito tipo){
         LinhaDeCredito linhaDeCreditoEntity = linhaDeCreditoRepository.findByTipo(tipo);
         return conversorDeObjetos.linhaDeCreditoEntityParaDto(linhaDeCreditoEntity);
     }
-
     
-    // Metodo utilitario para obter a renda mensal do cliente e sua avaliação
+    /**
+     * Metodo utilitario para obter a renda mensal do cliente e sua avaliação
+     * @return Map contendo a renda mensal e avaliação do cliente autenticado
+     */
     private Map<String, ?> obterDadosCdc(){
 
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -364,5 +431,15 @@ public class LinhasDeCreditoService {
         ClientePerfil clientePerfil = clientePerfilRepository.findByIdCliente(id).get();
 
         return Map.of("rendaMensal", clienteDados.getRendaMensal(), "avaliacao", clientePerfil.getAvaliacao());
+    }
+
+    /**
+     * Metodo utilitario para obter o cliente perfil do usuario logado
+     * @return ClientePerfil objeto contendo o perfil do cliente autenticado
+     */
+    private ClientePerfil obterClientePerfil() {
+        return 
+        ((UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+        .getClienteConta().getClienteDados().getClientePerfil();
     }
 }

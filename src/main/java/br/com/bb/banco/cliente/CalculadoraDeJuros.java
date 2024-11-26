@@ -15,9 +15,21 @@ import br.com.bb.banco.error.custom.CreditLineValidationException;
 @Service
 public class CalculadoraDeJuros {
 
-    // -- ANTECIPACAO --
+    /* 
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+    │                              ANTECIPAÇÃO                                    │
+    └─────────────────────────────────────────────────────────────────────────────┘
+    */
 
-    // 13º SALARIO
+    /**
+     * [13º SALARIO]
+     * Calcula a antecipação do décimo terceiro salário
+     * @param valor Valor do décimo terceiro salário a ser antecipado (entre R$1412.00 e R$20000.00)
+     * @param dataAtual Data atual para cálculo do empréstimo
+     * @param linhaDeCreditoDto Objeto contendo as informações da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do empréstimo
+     * @throws CreditLineValidationException se o valor estiver fora dos limites ou se estiver nos meses de pagamento (11 ou 12)
+     */
     public LinhaDeCreditoDto anteciparDecimoTerceiroSalario(Float valor, LocalDate dataAtual, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(dataAtual.getMonthValue() == 11 || dataAtual.getMonthValue() == 12){
@@ -41,10 +53,18 @@ public class CalculadoraDeJuros {
 
         return linhaDeCreditoDto;
     }
-
     
 
-    // RESTITUIÃO DO IRPF
+    /**
+     * [RESTITUIÇÃO DO IRPF]
+     * Calcula a antecipação da restituição do Imposto de Renda
+     * @param valor Valor da restituição a ser antecipada (entre R$1911.00 e R$50000.00)
+     * @param dataAtual Data atual para cálculo do empréstimo
+     * @param dataRecebimento Data prevista para recebimento da restituição
+     * @param linhaDeCreditoDto Objeto contendo as informações da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do empréstimo
+     * @throws CreditLineValidationException se o valor estiver fora dos limites, se a data de recebimento for igual à data atual ou se a data de recebimento for anterior à data atual
+     */
     public LinhaDeCreditoDto anteciparImpostoDeRenda(Float valor, LocalDate dataAtual, LocalDate dataRecebimento, LinhaDeCreditoDto linhaDeCreditoDto){
                 
         if(dataAtual.equals(dataRecebimento)){
@@ -72,8 +92,16 @@ public class CalculadoraDeJuros {
     }
 
 
-
-    // SAQUE ANIVERSARIO FGTS
+    /**
+     * [SAQUE ANIVERSARIO FGTS]
+     * Calcula a antecipação do saque aniversário do FGTS
+     * @param saldo Saldo disponível no FGTS (entre R$500.00 e R$50000.00)
+     * @param dataAtual Data atual para cálculo do empréstimo
+     * @param dataDeAniversario Data de aniversário do cliente para saque do FGTS
+     * @param linhaDeCreditoDto Objeto contendo as informações da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do empréstimo
+     * @throws CreditLineValidationException se o valor estiver fora dos limites ou se o mês atual for igual ao mês de aniversário
+     */
     public LinhaDeCreditoDto anteciparSaqueAniversarioFgts(Float saldo, LocalDate dataAtual, LocalDate dataDeAniversario, LinhaDeCreditoDto linhaDeCreditoDto){
                     
         if(saldo < 500 || saldo > 50000){
@@ -143,11 +171,23 @@ public class CalculadoraDeJuros {
     
         return linhaDeCreditoDto;
     }
-
-
-    // -- EMPRESTIMO COM GARANTIA --
     
-    // GARANTIA DE VEICULO
+    /* 
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+    │                        EMPRESTIMO COM GARANTIA                              │
+    └─────────────────────────────────────────────────────────────────────────────┘
+    */
+
+    /**
+     * [GARANTIA DE VEICULO]
+     * Calcula empréstimo com garantia de veículo
+     * @param valor Valor do empréstimo solicitado
+     * @param parcelas Número de parcelas desejado
+     * @param custo Valor do veículo usado como garantia
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do empréstimo
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto garantiaDeVeiculo(Float valor, Integer parcelas, Float custo, LinhaDeCreditoDto linhaDeCreditoDto){
         
 
@@ -171,10 +211,18 @@ public class CalculadoraDeJuros {
         linhaDeCreditoDto.setValorDaParcela(resultado.get("valorDasParcelas").floatValue());
 
         return linhaDeCreditoDto;
-    }
+    }    
     
-    
-    // GARANTIA DE IMOVEL
+    /**
+     * [GARANTIA DE IMOVEL]
+     * Calcula empréstimo com garantia de imóvel
+     * @param valor Valor do empréstimo solicitado
+     * @param parcelas Número de parcelas desejado
+     * @param custo Valor do imóvel usado como garantia
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do empréstimo
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto garantiaDeImovel(Float valor, Integer parcelas, Float custo, LinhaDeCreditoDto linhaDeCreditoDto){
         
 
@@ -198,10 +246,18 @@ public class CalculadoraDeJuros {
         linhaDeCreditoDto.setValorDaParcela(resultado.get("valorDasParcelas").floatValue());
 
         return linhaDeCreditoDto;
-    }
+    }    
     
-    
-    // GARANTIA DE INVESTIMENTOS
+    /**
+     * [GARANTIA DE INVESTIMENTOS]
+     * Calcula empréstimo com garantia de investimentos
+     * @param valor Valor do empréstimo solicitado
+     * @param parcelas Número de parcelas desejado
+     * @param custo Valor total dos investimentos usados como garantia
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do empréstimo
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto garantiaDeInvestimentos(Float valor, Integer parcelas, Float custo, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(custo < 10000){
@@ -234,11 +290,21 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
 
+    /* 
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+    │                             FINANCIAMENTO                                   │
+    └─────────────────────────────────────────────────────────────────────────────┘
+    */
 
-
-    // -- FINANCIAMENTO --
-
-    // FINANCIAMENTO IMOVEL
+    /**
+     * [FINANCIAMENTO IMOVEL]
+     * Calcula financiamento de imóvel com limite de 80% do valor do imóvel
+     * @param custo Valor total do imóvel
+     * @param parcelas Número de parcelas desejado
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto financiamentoDeImovel(Float custo, Integer parcelas, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(custo < 20000 || custo > 5000000){
@@ -262,7 +328,16 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
 
-    // FINANCIAMENTO CARRO
+
+    /**
+     * [FINANCIAMENTO CARRO]
+     * Calcula financiamento de carro
+     * @param custo Valor total do carro
+     * @param parcelas Número de parcelas desejado
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto financiamentoDeCarro(Float custo, Integer parcelas, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(custo < 20000 || custo > 500000){
@@ -283,7 +358,16 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
 
-    // FINANCIAMENTO MOTO
+
+    /**
+     * [FINANCIAMENTO MOTO]
+     * Calcula financiamento de moto com limite de 70% do valor da moto
+     * @param custo Valor total da moto
+     * @param parcelas Número de parcelas desejado
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto financiamentoDeMoto(Float custo, Integer parcelas, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(custo < 10000 || custo > 100000){
@@ -307,7 +391,15 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
 
-    // CREDITO MOBILIDADE
+    /**
+     * [CREDITO MOBILIDADE]
+     * Calcula crédito mobilidade com valores entre R$500,00 e R$50.000,00
+     * @param custo Valor total solicitado
+     * @param parcelas Número de parcelas desejado (entre 5 e 60)
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto creditoMobilidade(Float custo, Integer parcelas, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(custo < 500 || custo > 50000){
@@ -328,7 +420,15 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
     
-    // CREDITO REALIZA
+    /**
+     * [CREDITO REALIZA]
+     * Calcula crédito realiza com valores entre R$100,00 e R$50.000,00
+     * @param custo Valor total solicitado
+     * @param parcelas Número de parcelas desejado (entre 1 e 60)
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto creditoRealiza(Float custo, Integer parcelas, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(custo < 100 || custo > 50000){
@@ -349,7 +449,15 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
 
-    // CREDITO ENERGIA RENOVAVEL
+    /**
+     * [CREDITO ENERGIA RENOVAVEL]
+     * Calcula crédito para projetos de energia renovável com valores entre R$2.000,00 e R$100.000,00
+     * @param custo Valor total solicitado
+     * @param parcelas Número de parcelas desejado (entre 2 e 96)
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto creditoEnergiaRenovavel(Float custo, Integer parcelas, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(custo < 2000 || custo > 100000){
@@ -370,7 +478,15 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
 
-    // CREDITO PCD
+    /**
+     * [CREDITO PCD]
+     * Calcula crédito para Pessoas com Deficiência com valores entre R$70,00 e R$30.000,00
+     * @param custo Valor total solicitado
+     * @param parcelas Número de parcelas desejado (entre 2 e 60)
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto creditoPcd(Float custo, Integer parcelas, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(custo < 70 || custo > 30000){
@@ -389,12 +505,25 @@ public class CalculadoraDeJuros {
         linhaDeCreditoDto.setValorDaParcela(resultado.get("valorDasParcelas").floatValue());
 
         return linhaDeCreditoDto;
-    }
+    }    
     
+    /* 
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+    │                                  CDC                                        │
+    └─────────────────────────────────────────────────────────────────────────────┘
+    */
     
-    // -- CDC
-    
-    // CREDITO AUTOMATICO
+    /**
+     * [CREDITO AUTOMÁTICO]
+     * Calcula crédito automático com valores entre R$500,00 e R$10.000.000,00
+     * @param valor Valor total solicitado
+     * @param parcelas Número de parcelas desejado (entre 2 e 72)
+     * @param rendaMensal Renda mensal do cliente
+     * @param avaliacao Avaliação de crédito do cliente
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto creditoAutomatico(Float valor, Integer parcelas, Float rendaMensal, Avaliacao avaliacao, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(valor < 500 || valor > 10000000){
@@ -426,7 +555,17 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
 
-    // CREDITO SALARIO
+    /**
+     * [CREDITO SALÁRIO]
+     * Calcula crédito salário com valores entre R$500,00 e R$10.000.000,00
+     * @param valor Valor total solicitado
+     * @param parcelas Número de parcelas desejado (entre 2 e 96)
+     * @param rendaMensal Renda mensal do cliente
+     * @param avaliacao Avaliação de crédito do cliente
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto creditoSalario(Float valor, Integer parcelas, Float rendaMensal, Avaliacao avaliacao, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(valor < 500 || valor > 10000000){
@@ -458,7 +597,17 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
 
-    // CREDITO BENEFICIO
+    /**
+     * [CREDITO BENEFÍCIO]
+     * Calcula crédito benefício com valores entre R$500,00 e R$39.000,00
+     * @param valor Valor total solicitado
+     * @param parcelas Número de parcelas desejado (entre 2 e 72)
+     * @param rendaMensal Renda mensal do cliente
+     * @param avaliacao Avaliação de crédito do cliente
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return LinhaDeCreditoDto com os valores calculados do financiamento
+     * @throws CreditLineValidationException se os valores estiverem fora dos limites permitidos
+     */
     public LinhaDeCreditoDto creditoBeneficio(Float valor, Integer parcelas, Float rendaMensal, Avaliacao avaliacao, LinhaDeCreditoDto linhaDeCreditoDto){
         
         if(valor < 500 || valor > 39000){
@@ -490,8 +639,19 @@ public class CalculadoraDeJuros {
         return linhaDeCreditoDto;
     }
 
+    /* 
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+    │                            METODOS UTILITARIOS                              │
+    └─────────────────────────────────────────────────────────────────────────────┘
+    */
 
-    //Metodo utilitario para calcular juros compostos
+    /**
+     * Calcula juros compostos para uma linha de crédito
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @param periodo Número de parcelas ou meses
+     * @param capital Valor do empréstimo
+     * @return Map contendo montante, taxa de juros total, valor das parcelas e taxa de juros variável
+     */
     private Map<String, BigDecimal> jurosCompostos(LinhaDeCreditoDto linhaDeCreditoDto, Integer periodo, Float capital){
 
         String jurosFixoOuVariavel = calcularJurosVariavel(periodo, linhaDeCreditoDto);
@@ -510,7 +670,12 @@ public class CalculadoraDeJuros {
     }
 
 
-    //Metodo utilitario para calcular limite de credito
+    /**
+     * Calcula o limite de crédito baseado na avaliação e renda mensal do cliente
+     * @param avaliacao Avaliação de crédito do cliente (EXCELENTE, BOM ou outros)
+     * @param rendaMensal Renda mensal do cliente
+     * @return Limite de crédito calculado
+     */
     private Float calcularLimiteDeCredito(Avaliacao avaliacao, Float rendaMensal){
         
         Float limiteDeCredito;
@@ -531,7 +696,12 @@ public class CalculadoraDeJuros {
         return limiteDeCredito;
     }
 
-    //Metodo utilitario para calcular juros variavel em tipos de linhas especificos com base nas parcelas
+    /**
+     * Calcula a taxa de juros variável com base no tipo de linha de crédito e número de parcelas
+     * @param parcelas Número de parcelas do empréstimo
+     * @param linhaDeCreditoDto Objeto contendo dados da linha de crédito
+     * @return Taxa de juros calculada em formato String
+     */
     String calcularJurosVariavel(Integer parcelas, LinhaDeCreditoDto linhaDeCreditoDto){
         
         TipoLinhaDeCredito tipo = TipoLinhaDeCredito.valueOf(linhaDeCreditoDto.getTipo());
@@ -562,5 +732,4 @@ public class CalculadoraDeJuros {
         }
 
         return taxaDeJuros.toString();
-    }
-}
+    }}

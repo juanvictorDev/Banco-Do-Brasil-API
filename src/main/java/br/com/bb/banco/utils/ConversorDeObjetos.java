@@ -31,7 +31,10 @@ public class ConversorDeObjetos {
     }
 
 
-    // Conveter tipo ClienteDadosDto para ClienteDados
+    /**
+     * @param dto objeto ClienteDadosDto contendo os dados do cliente
+     * @return objeto ClienteDados com os dados convertidos
+     */
     public ClienteDados clienteDadosDtoParaEntity(ClienteDadosDto dto){
         
         return ClienteDados.builder()
@@ -58,7 +61,10 @@ public class ConversorDeObjetos {
 
     }
 
-    // Converter tipo ClienteDados para ClienteDadosDto
+    /**
+     * @param entity objeto ClienteDados contendo os dados do cliente
+     * @return objeto ClienteDadosDto com os dados convertidos
+     */
     public ClienteDadosDto clienteDadosEntityParaDto(ClienteDados entity){
         
         return ClienteDadosDto.builder()
@@ -85,7 +91,10 @@ public class ConversorDeObjetos {
 
     }
 
-    // Converter tipo ClientePerfil pra ClientePerfilDto
+    /**
+     * @param entity objeto ClientePerfil contendo os dados do perfil do cliente
+     * @return objeto ClientePerfilDto com os dados convertidos
+     */
     public ClientePerfilDto clientePerfilEntityParaDto(ClientePerfil entity){
 
         return ClientePerfilDto.builder()
@@ -98,7 +107,10 @@ public class ConversorDeObjetos {
 
     }
 
-    // Converter tipo LinhaDeCredito para LinhaDeCreditoDto
+    /**
+     * @param entity objeto LinhaDeCredito contendo os dados da linha de crédito
+     * @return objeto LinhaDeCreditoDto com os dados convertidos
+     */
     public LinhaDeCreditoDto linhaDeCreditoEntityParaDto(LinhaDeCredito entity){
 
         return LinhaDeCreditoDto.builder()
@@ -113,9 +125,12 @@ public class ConversorDeObjetos {
 
     }
 
-    // Converter a Tuple para HistoricoGeralDto, os dados tem base na condicional que
-    // se id da movimentação for do historico pessoal retorna valores especificos referente ao mesmo
-    // e se for do historico entre clientes, a mesma logica
+    /**
+     * @param tuple objeto Tuple contendo os dados da movimentação
+     * @return HistoricoGeralDto com os dados convertidos da movimentação
+     * Se mov_entre_cliente_id não for nulo, retorna dados de movimentação entre clientes
+     * Caso contrário, retorna dados de movimentação pessoal do cliente
+     */
     public HistoricoGeralDto tupleParaHistoricoGeralDto(Tuple tuple){
         
         if(tuple.get("mov_entre_cliente_id") != null ){
@@ -153,7 +168,11 @@ public class ConversorDeObjetos {
 
     }
 
-    // Método auxiliar para converter java.sql.Date em java.time.LocalDate
+    /**
+     * Método auxiliar
+     * @param sqlDate data em formato java.sql.Date a ser convertida
+     * @return LocalDate convertido ou null se o parâmetro for null
+     */
     private LocalDate sqlDateParaLocalDate(Date sqlDate) {
         return sqlDate != null ? sqlDate.toLocalDate() : null;
     }

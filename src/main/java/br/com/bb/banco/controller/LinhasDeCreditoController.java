@@ -24,8 +24,13 @@ public class LinhasDeCreditoController {
     
     // -- {LINHAS DE CREDITO} --
 
-    // [TODAS AS LINHAS DE CREDITO]
-    // Retornar todas as linhas de forma paginada, recebe page e size opcionais
+    /**
+     * [TODAS AS LINHAS DE CREDITO]
+     * Retorna todas as linhas de crédito de forma paginada
+     * @param page número da página desejada (começa em 0)
+     * @param size quantidade de itens por página
+     * @return ResponseEntity contendo PagedModel com as linhas de crédito
+     */
     @GetMapping("/linhas-de-credito")
     public ResponseEntity<PagedModel<EntityModel<LinhaDeCreditoDto>>> buscarLinhasDeCredito(
         @RequestParam(name = "page", defaultValue = "0") int page,
@@ -34,15 +39,28 @@ public class LinhasDeCreditoController {
         return ResponseEntity.ok().body(linhasDeCreditoService.encontrarLinhasDeCredito(page, size));
     }
     
-    // [LINHA DE CREDITO ESPECIFICA]
-    // Retorna uma linha de credito especifica, recebe id
+    /**
+     * [LINHA DE CREDITO ESPECIFICA]
+     * Busca uma linha de crédito específica pelo ID
+     * @param id identificador único da linha de crédito
+     * @return ResponseEntity contendo EntityModel com a linha de crédito encontrada
+     */
     @GetMapping("/linhas-de-credito/{id}")
     public ResponseEntity<EntityModel<LinhaDeCreditoDto>> buscarLinhaDeCredito(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(linhasDeCreditoService.encontrarLinhaDeCredito(id));
     }
     
-    // [SIMULAR LINHA DE CREDITO]
-    // Retorna a simulação de valores de uma linha especifica, rebecebe parametros opcionais lida com varios tipos de linhas
+    /**
+     * [LINHAS DE CREDITO POR TIPO]
+     * Realiza simulação de uma linha de crédito específica, valores são opcionais pois ele trata varias
+     * linhas de creditos, e cada uma possui um tipo diferente de logica e parametros de entrada
+     * @param tipo tipo da linha de crédito a ser simulada
+     * @param valor valor desejado para simulação (opcional)
+     * @param parcelas número de parcelas para simulação (opcional)
+     * @param custo custo do bem para simulação (opcional)
+     * @param data data para simulação (opcional)
+     * @return ResponseEntity contendo EntityModel com o resultado da simulação
+     */
     @GetMapping("/linhas-de-credito/simular/{tipo}")
     public ResponseEntity<EntityModel<LinhaDeCreditoDto>> simularLinhasDeCreditoPorTipo(
         @PathVariable("tipo") String tipo,
@@ -52,6 +70,5 @@ public class LinhasDeCreditoController {
         @RequestParam(name = "data", required = false) LocalDate data
     ) {
         return ResponseEntity.ok().body(linhasDeCreditoService.simularLinhaDeCreditoPorTipo(tipo, valor, parcelas, custo, data));
-    }
-    
+    }    
 }

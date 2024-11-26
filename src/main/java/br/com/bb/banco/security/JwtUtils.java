@@ -19,6 +19,12 @@ public class JwtUtils {
     private static final String ISSUER = "bb-api";
     
 
+    /**
+     * Gera um token JWT com base nos detalhes do usuário
+     * @param userDetails detalhes do usuário autenticado
+     * @return token JWT gerado
+     * @throws RuntimeException se houver erro na geração do token
+     */
     public String gerarTokenJwt(UserDetailsImpl userDetails) {
         try {
             Instant criacaoToken = LocalDateTime.now().toInstant(ZoneOffset.of("-03:00"));
@@ -41,7 +47,12 @@ public class JwtUtils {
         }
     }
 
-
+    /**
+     * Valida um token JWT e retorna suas claims
+     * @param token token JWT a ser validado
+     * @return Map contendo as claims do token
+     * @throws RuntimeException se o token for inválido ou estiver expirado
+     */
     public Map<String, Claim> validarTokenJwt(String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
@@ -57,5 +68,4 @@ public class JwtUtils {
             throw new RuntimeException("Token invalido ou expirado");
         }
     }
-
 }

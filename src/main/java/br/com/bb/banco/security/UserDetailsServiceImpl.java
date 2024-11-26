@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     
     public UserDetails loadUserByAgenciaAndNumeroDaConta(String agencia, String numeroDaConta){
         ClienteConta clienteConta = ClienteContaRepository.findByAgenciaAndNumeroDaConta(agencia, numeroDaConta)
-        .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado"));
+        .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado, usuario ou senha inválidos"));
 
         return new UserDetailsImpl(clienteConta);
     }

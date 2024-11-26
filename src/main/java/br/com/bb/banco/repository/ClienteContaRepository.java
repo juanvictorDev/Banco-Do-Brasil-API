@@ -14,8 +14,22 @@ import jakarta.persistence.Tuple;
 @Repository
 public interface ClienteContaRepository extends JpaRepository<ClienteConta, Long>{
 
-    // Select que junta a tabela de historico de movimentação pessoal do cliente e entre clientes,
-    // com base no idConta especificado
+    /**
+     * Consulta que retorna o histórico geral de movimentações de uma conta específica.
+     * Combina os registros de movimentações pessoais (depósitos e saques) com as 
+     * movimentações entre clientes (transferências enviadas e recebidas).
+     * 
+     * A consulta une (UNION ALL) duas subconsultas:
+     * 1. Movimentações pessoais da tabela historico_movimentacao_cliente
+     * 2. Transferências entre clientes da tabela historico_movimentacao_entre_clientes
+     * 
+     * O resultado é ordenado por data e hora decrescente, considerando ambos os tipos
+     * de movimentação através do COALESCE.
+     * 
+     * @param id ID da conta do cliente para buscar o histórico
+     * @param pageable Objeto com informações de paginação
+     * @return Page<Tuple> Página contendo os registros do histórico
+     */
     @Query(
         value = "SELECT * FROM (" +
                     "SELECT " +
@@ -68,7 +82,13 @@ public interface ClienteContaRepository extends JpaRepository<ClienteConta, Long
     )
     Page<Tuple> findHistoricoGeralById(@Param("id") Long id, Pageable pageable);
     
-    // Select que retorna a conta do cliente com base na agencia e conta
+    
+    /**
+     * Busca uma conta de cliente com base na agência e número da conta
+     * @param agencia número da agência bancária
+     * @param numeroDaConta número da conta bancária
+     * @return Optional contendo a conta do cliente se encontrada, ou vazio se não existir
+     */
     Optional<ClienteConta> findByAgenciaAndNumeroDaConta(String agencia, String numeroDaConta);
 
 }

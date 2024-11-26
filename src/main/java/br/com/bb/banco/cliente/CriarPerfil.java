@@ -27,11 +27,26 @@ public class CriarPerfil {
         this.random = new Random();
     }
 
+    /* 
+    ┌───────────────────────────────────────────────────────────────────────┐
+    │ Os metodos abaixo foram criados para simular uma pesquisa de analise  │
+    │ de credito e score feita pelas instituições financeiras como bancos,  │
+    │ serasa e spc, a criação de perfil é feita no ato do registro do novo  │
+    │ cliente, e no final recebendo uma avaliacao e uma nota para o perfil  │
+    └───────────────────────────────────────────────────────────────────────┘
+    */
 
-    // Os metodos abaixo foram criados para simular uma pesquisa de analise de credito e score feita pelas instituições financeiras
-    // como os bancos, serasa e spc, a criação de perfil é feita no ato do registro do novo cliente, e no final recebendo uma
-    // avaliacao e uma nota para o perfil
-
+    /**
+     * @param idade Idade do cliente
+     * @param rendaMensal Renda mensal do cliente em reais
+     * @return Map contendo os seguintes dados:
+     *         - compromisso com credito: está relacionado com o pagamento em dia de faturas como financiamentos, parcelamentos em lojas e empréstimos.
+     *         - registro de dividas: representa o histórico de dívidas.
+     *         - consultas ao cpf: são as consultas que as empresas fazem antes de conceder crédito, para conhecer o perfil financeiro do cliente.
+     *         - evolucao financeira: está relacionado ao tempo de relacionamento do usuário com o mercado de crédito e seu histórico.
+     *         - dividas: valor calculado com base na renda mensal.
+     *         - score: pontuação final calculada com base em todos os fatores acima.
+     */
     private Map<String, Double> pesquisarScore(int idade, double rendaMensal){
         double compromissoComCredito, registroDeDividas, consultasAoCpf;
         double dividas, evolucaoFinanceira, score;
@@ -88,6 +103,20 @@ public class CriarPerfil {
     }
 
 
+    /**
+     * Filtra e processa os dados do cliente para gerar uma nota de perfil
+     * @param rendaMensal valor da renda mensal do cliente
+     * @param dividas valor total das dívidas do cliente
+     * @param idade idade do cliente
+     * @param ocupacao ocupação profissional do cliente
+     * @param compromissoComCredito pontuação que representa o histórico de compromissos com crédito
+     * @return Map contendo os valores calculados:
+     *         - capacidade de pagamento: relação entre a renda e as dívidas da pessoa.
+     *         - utilização de crédito: mede quanto de crédito o cliente está utilizando.
+     *         - garantias: quantidade de garantias que o cliente possui.
+     *         - estabilidade profissional: é avaliada pelo histórico de empregos e a natureza do setor em que o cliente trabalha.
+     *         - nota final do perfil: pontuação final calculada com base em todos os fatores acima.
+     */
     private Map<String, Double> filtrarDados(double rendaMensal, double dividas, int idade, Ocupacao ocupacao, double compromissoComCredito){
         double capacidadeDePagamento, utilizacaoDeCredito, garantias;
         double estabilidadeProfissional, notaDoPerfil;
@@ -150,7 +179,10 @@ public class CriarPerfil {
         return resultadoFiltragemDeDados;
     }
 
-
+    /**
+     * @param notaDoPerfil valor numérico entre 0 e 10 que representa a nota do perfil do cliente
+     * @return Avaliacao enum que representa a classificação do cliente
+     */
     private Avaliacao receberAvaliacao(double notaDoPerfil){
         Avaliacao avaliacao;
 
@@ -170,8 +202,12 @@ public class CriarPerfil {
         return avaliacao;
     }
 
-    // Metodo principal que recebe o clienteDados do novo cliente e chama todos os outros metodos para
-    // criar o perfil do cliente, retorna um clientePerfil salvando o mesmo no banco de dados
+    /**
+     * Metodo principal que chama outros metodos e que recebe os dados do novo cliente e 
+     * cria seu perfil salvando no banco de dados
+     * @param clienteDados objeto contendo os dados basicos do cliente como idade, renda e ocupacao
+     * @return ClientePerfil objeto contendo o perfil completo do cliente com sua avaliacao de credito
+     */
     public ClientePerfil criar(ClienteDados clienteDados){
         int idade = Period.between(clienteDados.getDataDeNascimento(), LocalDate.now()).getYears();
         double rendaMensal = clienteDados.getRendaMensal();
@@ -192,7 +228,5 @@ public class CriarPerfil {
             .build();
 
         return clientePerfilRepository.save(clientePerfil);
-    }
-
- 
+    } 
 }

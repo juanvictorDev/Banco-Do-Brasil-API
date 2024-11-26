@@ -44,6 +44,7 @@ import br.com.bb.banco.security.JwtUtils;
 import br.com.bb.banco.security.UserDetailsImpl;
 import br.com.bb.banco.utils.ConversorDeObjetos;
 import jakarta.persistence.Tuple;
+import jakarta.servlet.http.Cookie;
 
 
 @Service
@@ -92,9 +93,13 @@ public class ClienteService {
     
     // -- {CLIENTE DADOS} --
 
-    // [CLIENTE DADOS]
-    // Metodo que retorna dados de um cliente especifico
-    // Recebe idCliente
+    /**
+     * [CLIENTE DADOS]
+     * Metodo que retorna dados de um cliente específico
+     * @param id Identificador único do cliente (idCliente)
+     * @return EntityModel contendo os dados do cliente (ClienteDadosDto) e links HATEOAS relacionados
+     * @throws NoSuchElementException quando o cliente não é encontrado
+     */
     public EntityModel<ClienteDadosDto> encontrarClienteDados(Long id){
         
         ClienteDados clienteDados = clienteDadosRepository.findById(id)
@@ -108,10 +113,15 @@ public class ClienteService {
         
         return EntityModel.of(conversorDeObjetos.clienteDadosEntityParaDto(clienteDados), selfLink, perfilLink, contaLink);
     }
-    
-    // [TODOS CLIENTES DADOS]
-    // Metodo que retorna todos os dados dos clientes
-    // Recebe page e size
+
+    /**
+     * [TODOS CLIENTES DADOS]
+     * Metodo que retorna todos os dados dos clientes de forma paginada
+     * @param page Número da página desejada (começando em 0)
+     * @param size Quantidade de registros por página
+     * @return PagedModel contendo lista de EntityModel com dados dos clientes (ClienteDadosDto) e links HATEOAS relacionados
+     * incluindo navegação entre páginas (self, next, previous, firstPage, lastPage)
+     */
     public PagedModel<EntityModel<ClienteDadosDto>> encontrarClientesDados(Integer page, Integer size){
         
         Pageable pageable = PageRequest.of(page, size);
@@ -157,12 +167,16 @@ public class ClienteService {
         return PagedModel.of(entityModelList, pageMetadata, links);
     }
 
-
     // -- {PERFIL DO CLIENTE} --
 
-    // [PERFIL CLIENTE]
-    // Metodo que retorna perfil do cliente
-    // Recebe idPerfil
+
+    /**
+     * [PERFIL CLIENTE]
+     * Método que retorna o perfil do cliente
+     * @param id ID do perfil do cliente (idPerfil)
+     * @return EntityModel contendo dados do perfil do cliente (ClientePerfilDto) e links HATEOAS relacionados (self, dados, conta)
+     * @throws NoSuchElementException se o perfil não existir
+     */
     public EntityModel<ClientePerfilDto> encontrarClientePerfil(Long id){
         
         ClientePerfil clientePerfil = clientePerfilRepository.findByIdCliente(id)
@@ -175,9 +189,14 @@ public class ClienteService {
         return EntityModel.of(conversorDeObjetos.clientePerfilEntityParaDto(clientePerfil), selfLink, dados, conta);
     }
 
-    // [TODOS OS PERFIS]
-    // Metodo que retorna todos os perfis
-    // Recebe page e size
+    /**
+     * [TODOS OS PERFIS]
+     * Método que retorna todos os perfis de clientes de forma paginada
+     * @param page número da página desejada (começa em 0)
+     * @param size quantidade de elementos por página
+     * @return PagedModel contendo lista de EntityModel com dados dos perfis (ClientePerfilDto) e links HATEOAS relacionados
+     * incluindo navegação entre páginas (self, next, previous, firstPage, lastPage)
+     */
     public PagedModel<EntityModel<ClientePerfilDto>> encontrarClientesPerfis(Integer page, Integer size){
 
         Pageable pageable = PageRequest.of(page, size);
@@ -222,30 +241,35 @@ public class ClienteService {
         return PagedModel.of(entityModelList, pageMetadata, links);
     }
 
-
+    
     // -- {CONTA E OPERAÇÕES} --
 
-    // [CLIENTE CONTA]
-    // Metodo para buscar conta do cliente
-    // Recebe id da ClienteConta
+    /**
+     * [CLIENTE CONTA]
+     * Método para buscar conta do cliente
+     * @param id ID da ClienteConta que será buscada (idConta)
+     * @return EntityModel contendo dados da conta (ClienteContaDto) e links HATEOAS relacionados (self, deposito, saque, transferencia)
+     * @throws RuntimeException se o ID enviado não for compatível com o ID do usuário autenticado
+     * @throws NoSuchElementException se a conta não existir
+     */
     public EntityModel<ClienteContaDto> encontrarClienteConta(Long id){
-        
+    
         UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
+    
         if(user.getClienteConta().getIdConta() != id){
             throw new RuntimeException("o id enviado não é compativel com o id autenticado");
         }
 
         ClienteConta clienteConta = clienteContaRepository.findById(id).
         orElseThrow(() -> new NoSuchElementException("Essa conta não existe"));
-        
+    
         ClienteContaDto clienteContaDto = ClienteContaDto.builder()
         .idConta(clienteConta.getIdConta())
         .agencia(clienteConta.getAgencia())
         .numeroDaConta(clienteConta.getNumeroDaConta())
         .saldo(clienteConta.getSaldo().doubleValue())
         .build();
-        
+    
 
         Link self = linkTo(methodOn(ClienteController.class).buscarClienteConta(id)).withSelfRel().withType("GET");
         Link deposito = linkTo(methodOn(ClienteController.class).depositarClienteConta(id, null)).withRel("deposito").withType("POST");
@@ -255,14 +279,23 @@ public class ClienteService {
         return EntityModel.of(clienteContaDto, self, deposito, saque, transferencia);
     }
 
-    // [DEPOSITO]
-    // Metodo para realizar deposito na conta do cliente e salvar no historico
-    // Recebe id da ClienteConta e o valor para deposito
+
+
+    /**
+     * [DEPOSITO]
+     * Método para realizar depósito na conta do cliente e salvar no histórico
+     * @param id ID da ClienteConta que receberá o depósito (idConta)
+     * @param valor Valor a ser depositado (deve ser entre R$10,00 e R$10.000,00)
+     * @return EntityModel contendo dados da transação (RespostaTransacaoDto) e links HATEOAS relacionados (self, saque, transferencia, conta)
+     * @throws RuntimeException se o ID enviado não for compatível com o ID do usuário autenticado
+     * @throws IllegalArgumentException se o valor do depósito for menor que R$10,00 ou maior que R$10.000,00
+     * @throws NoSuchElementException se a conta não existir
+     */
     @Transactional
     public EntityModel<RespostaTransacaoDto> depositarNaConta(Long id, Double valor){
 
         UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
+    
         if(user.getClienteConta().getIdConta() != id){
             throw new RuntimeException("o id enviado não é compativel com o id autenticado");
         }
@@ -273,9 +306,9 @@ public class ClienteService {
 
         ClienteConta conta = clienteContaRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("Essa conta não existe"));
-        
+    
         BigDecimal novoSaldo = conta.getSaldo().add(new BigDecimal(valor.toString()));
-        
+    
         RespostaTransacaoDto respostaTransacaoDto = RespostaTransacaoDto.builder()
         .agencia(conta.getAgencia())
         .conta(conta.getNumeroDaConta())
@@ -283,9 +316,9 @@ public class ClienteService {
         .saldoAnterior(conta.getSaldo().doubleValue())
         .saldoAtual(novoSaldo.doubleValue())
         .build();
-        
+    
         conta.setSaldo(novoSaldo);
-        
+    
         clienteContaRepository.save(conta);
 
         HistoricoMovimentacaoCliente historico = HistoricoMovimentacaoCliente.builder()
@@ -303,32 +336,39 @@ public class ClienteService {
         Link saque = linkTo(methodOn(ClienteController.class).sacarClienteConta(id, null)).withRel("saque").withType("POST");
         Link transferencia = linkTo(methodOn(ClienteController.class).transferenciaEntreClienteConta(id, null, null, null)).withRel("transferencia").withType("POST");
         Link contaCliente = linkTo(methodOn(ClienteController.class).buscarClienteConta(id)).withRel("conta").withType("GET");
-        
+    
         return EntityModel.of(respostaTransacaoDto, self, saque, transferencia, contaCliente);
     }
     
-    // [SAQUE]
-    // Metodo para realizar o saque na conta do cliente e salvar no historico
-    // Recebe id da ClienteConta e o valor para saque
+    /**
+     * [SAQUE]
+     * Método para realizar o saque na conta do cliente e salvar no histórico de movimentações
+     * @param id Identificador único da conta do cliente
+     * @param valor Valor a ser sacado da conta
+     * @return EntityModel<RespostaTransacaoDto> contendo os dados da transação e links HATEOAS
+     * @throws RuntimeException se o id enviado não for compatível com o usuário autenticado
+     * @throws NoSuchElementException se a conta não existir
+     * @throws IllegalArgumentException se o valor for menor que R$10,00 ou maior que o saldo disponível
+     */
     @Transactional
     public EntityModel<RespostaTransacaoDto> sacarDaConta(Long id, Double valor){
 
         UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
+    
         if(user.getClienteConta().getIdConta() != id){
             throw new RuntimeException("o id enviado não é compativel com o id autenticado");
         }
-                
+            
         ClienteConta conta = clienteContaRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("Essa conta não existe"));
-        
+    
         if(valor < 10){
             throw new IllegalArgumentException("O valor do saque deve ser maior que R$10,00");
         }
         if(valor > conta.getSaldo().doubleValue()){
             throw new IllegalArgumentException("O valor do saque ultrapassa o saldo disponivel");
         }
-        
+    
         BigDecimal novoSaldo = conta.getSaldo().subtract(new BigDecimal(valor.toString()));
 
         RespostaTransacaoDto respostaTransacaoDto = RespostaTransacaoDto.builder()
@@ -358,18 +398,27 @@ public class ClienteService {
         Link deposito = linkTo(methodOn(ClienteController.class).depositarClienteConta(id, valor)).withRel("deposito").withType("POST");
         Link transferencia = linkTo(methodOn(ClienteController.class).transferenciaEntreClienteConta(id, null, null, null)).withRel("transferencia").withType("POST");
         Link contaCliente = linkTo(methodOn(ClienteController.class).buscarClienteConta(id)).withRel("conta").withType("GET");
-        
+    
         return EntityModel.of(respostaTransacaoDto, self, deposito, transferencia, contaCliente);
     }
-    
-    // [TRANSFERENCIA ENTRE CLIENTES]
-    // Metodo para realizar transferencias entre clientes e salvar no historico
-    // Recebe id da ClienteConta, valor para transferir, agencia e conta do destinatario
+
+    /**
+     * [TRANSFERENCIA ENTRE CLIENTES]
+     * Realiza transferência de valores entre contas de clientes e registra no histórico
+     * @param id ID da conta do cliente remetente
+     * @param valor Valor a ser transferido
+     * @param agencia Número da agência do destinatário
+     * @param conta Número da conta do destinatário
+     * @return EntityModel contendo os dados da transação e links HATEOAS
+     * @throws RuntimeException se o ID não corresponder ao usuário autenticado ou tentar transferir para própria conta
+     * @throws NoSuchElementException se a conta remetente ou destinatário não existir
+     * @throws IllegalArgumentException se o valor for menor que R$10 ou maior que o saldo disponível
+     */
     @Transactional
     public EntityModel<RespostaTransacaoDto> transferirValorEntreClientes(Long id, Double valor, String agencia, String conta){
 
         UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
+    
         if(user.getClienteConta().getIdConta() != id){
             throw new RuntimeException("o id enviado não é compativel com o id autenticado");
         }
@@ -405,10 +454,10 @@ public class ClienteService {
         .agenciaDestinatario(contaDestinatario.getAgencia())
         .contaDestinatario(contaDestinatario.getNumeroDaConta())
         .build();
-        
+    
         contaRemetente.setSaldo(novoSaldoRemetente);
         contaDestinatario.setSaldo(novoSaldoDestinatario);
-        
+    
         clienteContaRepository.save(contaRemetente);
         clienteContaRepository.save(contaDestinatario);
 
@@ -426,13 +475,19 @@ public class ClienteService {
         Link deposito = linkTo(methodOn(ClienteController.class).depositarClienteConta(id, valor)).withRel("deposito").withType("POST");
         Link saque = linkTo(methodOn(ClienteController.class).sacarClienteConta(id, null)).withRel("saque").withType("POST");
         Link contaCliente = linkTo(methodOn(ClienteController.class).buscarClienteConta(id)).withRel("conta").withType("GET");
-        
-        return EntityModel.of(respostaTransacaoDto, self, deposito, saque, contaCliente);
-    }
     
-    // [HISTORICO GERAL]
-    // Metodo responsavel por trazer o historico da conta do cliente de forma paginada
-    // Recebe id da ClienteConta, numero da pagina e tamanho da pagina
+        return EntityModel.of(respostaTransacaoDto, self, deposito, saque, contaCliente);
+    }    
+
+    /**
+     * [HISTORICO GERAL]
+     * Busca o histórico geral da conta do cliente de forma paginada
+     * @param id ID da conta do cliente
+     * @param page Número da página desejada (começa em 0)
+     * @param size Quantidade de registros por página
+     * @return PagedModel contendo lista de HistoricoGeralDto com links HATEOAS
+     * @throws RuntimeException se o ID enviado não for compatível com o usuário autenticado
+     */
     public PagedModel<HistoricoGeralDto> buscarHistoricoGeral(Long id, Integer page, Integer size){
         
         UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -477,12 +532,18 @@ public class ClienteService {
 
         return PagedModel.of(listaHistorico, pageMetadata, links);
     }
-
-        
+     
+    
     // -- {CADASTRO LOGIN E LOGOUT} --
         
+    /**
+     * Realiza a autenticação do cliente e gera um token JWT
+     * @param login Objeto contendo agência, conta e senha do cliente
+     * @return Token JWT gerado após autenticação bem-sucedida
+     * @throws AuthenticationException se as credenciais forem inválidas
+     */
     public String logarClienteERetornarJwt(LoginDto login){
-        
+
         CustomAuthenticationToken customAuthenticationToken = new CustomAuthenticationToken(login.agencia(), login.conta(), login.senha());
             
         Authentication authentication =  authenticationManager.authenticate(customAuthenticationToken);
@@ -490,6 +551,15 @@ public class ClienteService {
         String jwt = jwtUtils.gerarTokenJwt((UserDetailsImpl) authentication.getPrincipal());
         
         return jwt;
+    }
+
+    public Cookie logoutClienteInvalidarCookie(){
+        Cookie jwtCookie = new Cookie("jwt", null);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+
+        return jwtCookie;
     }
 
     public EntityModel<ClienteDadosDto> cadastrarNovoCliente(ClienteDadosDto requestBody){
