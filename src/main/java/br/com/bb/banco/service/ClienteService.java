@@ -17,6 +17,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -534,33 +535,25 @@ public class ClienteService {
     }
      
     
-    // -- {CADASTRO LOGIN E LOGOUT} --
+    // -- {CADASTRO E LOGIN } --
         
     /**
      * Realiza a autenticação do cliente e gera um token JWT
      * @param login Objeto contendo agência, conta e senha do cliente
-     * @return Token JWT gerado após autenticação bem-sucedida
+     * @return Map contendo o token JWT e o Nome do Cliente após autenticação bem-sucedida
      * @throws AuthenticationException se as credenciais forem inválidas
      */
-    public String logarClienteERetornarJwt(LoginDto login){
-
+    public Map<String, String> logarClienteERetornarJwt(LoginDto login){
         CustomAuthenticationToken customAuthenticationToken = new CustomAuthenticationToken(login.agencia(), login.conta(), login.senha());
             
         Authentication authentication =  authenticationManager.authenticate(customAuthenticationToken);
         
         String jwt = jwtUtils.gerarTokenJwt((UserDetailsImpl) authentication.getPrincipal());
+        String nomeCliente = ((UserDetailsImpl) authentication.getPrincipal()).getUsername();
         
-        return jwt;
+        return Map.of("jwt", jwt, "nomeCliente", nomeCliente);
     }
 
-    public Cookie logoutClienteInvalidarCookie(){
-        Cookie jwtCookie = new Cookie("jwt", null);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(0);
-
-        return jwtCookie;
-    }
 
     public EntityModel<ClienteDadosDto> cadastrarNovoCliente(ClienteDadosDto requestBody){
 

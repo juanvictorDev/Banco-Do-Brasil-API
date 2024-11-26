@@ -175,32 +175,19 @@ public class ClienteController {
     }
 
 
-    // -- {CADASTRO LOGIN E LOGOUT} --
+    // -- {CADASTRO E LOGIN } --
 
 
     /**
      * [LOGIN]
-     * Faz o login do cliente e retorna um cookie httpOnly com o token JWT.
+     * Faz o login do cliente e retorna o token JWT e o nome do cliente.
      * @param login Objeto contendo os dados necessários para autenticação do cliente
-     * @param response O objeto de resposta HTTP, com objetivo de adicionar o cookie JWT
-     * @return ResponseEntity contendo uma mensagem de sucesso após a autenticação
+     * @return ResponseEntity contendo um Map com o token JWT, nome do cliente e mensagem de sucesso
      */
     @PostMapping("/cliente/login")
     public ResponseEntity<Map<String, String>> loginCliente(@RequestBody LoginDto login, HttpServletResponse response) {
-        String jwt = clienteService.logarClienteERetornarJwt(login);
-        return ResponseEntity.ok(Map.of("token", jwt, "message", "Autenticado com sucesso"));
-    }
-
-    /**
-     * [LOGOUT]
-     * Faz o logout do cliente e invalida o cookie JWT.
-     * @param response O objeto de resposta HTTP, com objetico de adicionar um cookie invalido.
-     * @return Um ResponseEntity com uma mensagem de sucesso.
-     */
-    @PostMapping("/cliente/logout")
-    public ResponseEntity<String> logoutCliente(HttpServletResponse response) {
-        response.addCookie(clienteService.logoutClienteInvalidarCookie());
-        return ResponseEntity.ok("Logout realizado com sucesso");
+        Map<String, String> dados = clienteService.logarClienteERetornarJwt(login);
+        return ResponseEntity.ok(Map.of("token", dados.get("jwt"), "nomeCliente", dados.get("nomeCliente"), "message", "Autenticado com sucesso"));
     }
 
     /**
