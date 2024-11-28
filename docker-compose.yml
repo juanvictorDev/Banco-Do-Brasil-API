@@ -1,7 +1,19 @@
+networks:
+  my_net:
 volumes:
   my_db:
 
 services:
+
+  api:
+    build: .
+    container_name: banco-do-brasil-api
+    ports:
+      - "8080:8080"
+    networks:
+      - my_net
+    depends_on:
+      - mariadb
 
   mariadb:
     image: mariadb:11.4.3-noble
@@ -11,5 +23,7 @@ services:
     environment:
       - MARIADB_ROOT_PASSWORD=bancodobrasil-api
       - TZ=America/Sao_Paulo
+    networks:
+      - my_net
     volumes:
       - "my_db:/var/lib/mysql"

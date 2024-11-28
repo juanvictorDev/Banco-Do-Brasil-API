@@ -12,14 +12,14 @@ INSERT INTO cliente_dados (
     1, 'Pedro Paulo', '551.571.464-42', 'ppdev@gmail.com', '$2a$10$5j3dZ5D7MblH0GXF7aqv5ulZkAdjMAdSGvceppMWxi.q.A3UX7Twe',
     '(81)99342-6942', '1997-05-10', '50800-010', 'PE', 'Recife',
     'Iputinga', 'Rua Professor Joaquim Cavalcanti', '48', 'ROLE_USER', null, 'MASCULINO',
-    'ENSINO_SUPERIOR', 'SOLTEIRO', 'DESENVOLVEDOR_DE_SOFTWARE', 7546.45
+    'ENSINO_SUPERIOR', 'SOLTEIRO', 'DESENVOLVEDOR_DE_SOFTWARE', 15720.95
 );
 
 INSERT INTO cliente_perfil (id_perfil, nota_do_perfil, score, avaliacao, id_cliente)
 VALUES (1, 7.4, 766, 'BOM', 1);
 
 INSERT INTO cliente_conta (id_conta, agencia, numero_da_conta, saldo, id_cliente)
-VALUES (1, "2345-6", "7654321-0", 10500.95, 1);
+VALUES (1, "2345-6", "7654321-0", 15720.95, 1);
 
 
 
@@ -42,7 +42,7 @@ INSERT INTO cliente_dados (
 );
 
 INSERT INTO cliente_perfil (id_perfil, nota_do_perfil, score, avaliacao, id_cliente)
-VALUES (2, 8.2, 805, 'EXCELENTE', 2);
+VALUES (2, 3.2, 315, 'RUIM', 2);
 
 INSERT INTO cliente_conta (id_conta, agencia, numero_da_conta, saldo, id_cliente)
-VALUES (2, "1334-9", "1234567-8", 5000.00, 2);
+VALUES (2, "1334-9", "1234567-8", 6500.00, 2);

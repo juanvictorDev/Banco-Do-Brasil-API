@@ -45,7 +45,6 @@ import br.com.bb.banco.security.JwtUtils;
 import br.com.bb.banco.security.UserDetailsImpl;
 import br.com.bb.banco.utils.ConversorDeObjetos;
 import jakarta.persistence.Tuple;
-import jakarta.servlet.http.Cookie;
 
 
 @Service
